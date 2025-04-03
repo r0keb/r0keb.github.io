@@ -14,35 +14,38 @@ timezone:
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Chirpy # the main title
+title: r0keb # the main title
 
-tagline: A text-focused Jekyll theme # it will display as the subtitle
+tagline: Diving into low-level computing and systems. # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+  Exploring low-level programming, OS Internals (mostly Windows) and CPU Internals - maybe GPUs in the future.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: ""
+url: "https://r0keb.github.io"
 
 github:
-  username: github_username # change to your GitHub username
+  username: r0keb # change to your GitHub username
 
 twitter:
-  username: twitter_username # change to your Twitter username
+  username: r0keb # change to your Twitter username
+
+linkedin:
+  username: carlos-roquee
 
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: your_full_name
-  email: example@domain.com # change to your email address
+  name: r0keb
+  email: croque1104@gmail.com # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://twitter.com/username # change to your Twitter homepage
-    - https://github.com/username # change to your GitHub homepage
+    - https://twitter.com/r0keb # change to your Twitter homepage
+    - https://github.com/r0keb # change to your GitHub homepage
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
-    # - https://www.linkedin.com/in/username
+    - https://www.linkedin.com/in/carlos-roquee
 
 # Site Verification Settings
 webmaster_verifications:
@@ -88,7 +91,8 @@ pageviews:
 #     light — Use the light color scheme
 #     dark — Use the dark color scheme
 #
-theme_mode: # [light | dark]
+theme_mode: dark
+# [light | dark]
 
 # The CDN endpoint for media resources.
 # Notice that once it is assigned, the CDN url
