@@ -154,7 +154,7 @@ pwa:
 paginate: 10
 
 # The base URL of your site
-baseurl: "https://r0keb.github.io/"
+baseurl: ""
 
 # ------------ The following options are not recommended to be modified ------------------
 
