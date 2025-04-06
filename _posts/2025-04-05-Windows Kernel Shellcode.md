@@ -52,7 +52,7 @@ int main() {
 Since Windows is known for frequently changing kernel data structures, all upcoming kernel shellcodes will reference data through structure offsets.
 
 We’ll be adapting the shellcodes to match the host version of Windows 11.
-```
+```cmd
 Nombre de host:                            ДОБРОЕ-УТРО
 Nombre del sistema operativo:              Microsoft Windows 11 Pro
 Versión del sistema operativo:             10.0.22631 N/D Compilación 22631
@@ -68,7 +68,7 @@ mov r9, qword gs:[0x188]
 ```
 
 Now that we’ve stored the `_KTHREAD` in **`r9`**, we can use it to locate the `_EPROCESS`, which is `0x220` bytes away (**EPROCESS** = **KTHREAD** + ``0x220``):
-```
+```WinDbg
 2: kd> dt _KTHREAD Process
 ntdll!_KTHREAD
    +0x220 Process : Ptr64 _KPROCESS
@@ -85,7 +85,7 @@ Since we want to elevate the privileges of the parent process, we need to find t
 ![](imgs/blog/1WindowsKernelShellcode/20250218170003.png)
 
 Theoretically, we should be checking ``conhost.exe``, meaning we should go one layer deeper—our PPID should be ``0x1a8c``.
-```
+```WinDbg
 2: kd> dt nt!_EPROCESS InheritedFromUniqueProcessId
    +0x540 InheritedFromUniqueProcessId : Ptr64 Void
 ```
@@ -117,7 +117,7 @@ Which results in:
 ```
 
 Once we've found the `cmd.exe` `_EPROCESS` structure, we can inspect it and find at offset `0x4b8` the token object:
-```
+```WinDbg
 2: kd> dt _EPROCESS Token
 ntdll!_EPROCESS
    +0x4b8 Token : _EX_FAST_REF
@@ -194,12 +194,12 @@ int main() {
 }
 ```
 Once the shellcode is written, compile it using nasm:
-```
+```cmd
 nasm -f bin MyTokenElevate.asm
 ```
 
 To view the disassembly:
-```
+```cmd
 ndisasm -b 64 MyTokenElevate
 ```
 
