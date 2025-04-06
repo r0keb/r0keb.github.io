@@ -1355,3 +1355,7 @@ the first execution fails at first glance, however, if we check the privileges w
 and if we run the program again:
 ![](imgs/blog/1WindowsKernelShellcode/20250222210044.png)
 we successfully get a shell as system
+
+You can check the codes on my github repo [Windows Kernel Shellcode](https://github.com/r0keb/Windows-Kernel-Shellcode)
+
+Good morning, and in case I don't see ya: Good afternoon, good evening, and good night!
