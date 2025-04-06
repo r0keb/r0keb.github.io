@@ -96,7 +96,7 @@ mov r8, qword [r9 + 0x540]
 ```
 
 We’ve now saved the PID of `cmd.exe`, but before proceeding, we need to locate its `_EPROCESS` address in memory. If we inspect the current process (`kscldr.exe`), we can see that at offsets `0x440` and `0x448` we have `UniqueProcessId` and `ActiveProcessLinks`. The latter is a linked list of `_EPROCESS` objects that can be traversed and compared against the `cmd.exe` PID stored in `r8`.
-```python
+```WinDbg
 2: kd> dt _EPROCESS
 ntdll!_EPROCESS
    +0x000 Pcb              : _KPROCESS
@@ -686,7 +686,7 @@ The shellcode needs to:
 - Modify the DACL, switching the SYSTEM SID to `Authenticated Users`
 - Iterate over `_EPROCESS` again to modify the token and remove the high-integrity restriction
 
-```python
+```WinDbg
 0: kd> dt nt!_KTHREAD Process
    +0x220 Process : Ptr64 _KPROCESS
 ```
@@ -716,7 +716,7 @@ Now we loop to find the process by name:
 ```
 
 We now have winlogon.exe’s `_EPROCESS` in **`r9`**:
-```python
+```WinDbg
 0: kd> dt nt!_OBJECT_HEADER ffffa10df2e79080-30 SecurityDescriptor
    +0x028 SecurityDescriptor : 0xffffdd83`27a4feaf Void
 ```
@@ -731,12 +731,12 @@ We now have winlogon.exe’s `_EPROCESS` in **`r9`**:
 ```
 
 Now that we've changed the **DACL** of **`winlogon.exe`**, what's left? Allowing our process to have a handle on winlogon.exe
-```python
+```WinDbg
 dt nt!_EPROCESS ffffa10df89cd080 Token
    +0x4b8 Token : _EX_FAST_REF
 ```
 
-```python
+```WinDbg
 0: kd> dt nt!_TOKEN (poi(ffffa10df89cd080+0x4b8)&0xfffffffffffffff0)
    +0x000 TokenSource      : _TOKEN_SOURCE
    +0x010 TokenId          : _LUID
@@ -960,7 +960,7 @@ We run it on the target OS:
 
 ![](imgs/blog/1WindowsKernelShellcode/20250222013847.png)
 We set a BP on NtCreateTransaction, inspect the shellcode buffer, disable SMAP and SMEP, set rip, step over, set a BP on the shellcode’s ret, continue with g, reset rip, and continue:
-```python
+```WinDbg
 nt!DbgBreakPointWithStatus:
 fffff801`208203e0 cc              int     3
 0: kd> bp nt!NtCreateTransaction
@@ -1085,7 +1085,7 @@ The execution is as follows (suggested by me through trial and error):
 The structure we care about is ``_SEP_TOKEN_PRIVILEGES``.
 
 ![](imgs/blog/1WindowsKernelShellcode/20250222191812.png)
-```python
+```WinDbg
 0: kd> dt nt!_SEP_TOKEN_PRIVILEGES ((poi(ffff800e70e5e080+0x4b8) & 0xfffffffffffffff0) + 0x40)
    +0x000 Present          : 0x00000006`02880000
    +0x008 Enabled          : 0x800000
