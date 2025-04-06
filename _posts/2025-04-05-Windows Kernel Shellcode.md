@@ -1,6 +1,6 @@
 ---
 title: "Windos Kernel Shellcode"
-date: 2025-04-06 11:39:03 +/-0200
+date: 2025-04-05 11:39:03 +/-0200
 categories: [exploit, Windows]
 tags: [shellcode]     # TAG names should always be lowercase
 ---
