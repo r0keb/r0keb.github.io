@@ -5,8 +5,6 @@ categories: [exploit, Windows]
 tags: [shellcode]     # TAG names should always be lowercase
 ---
 
-# Kernel Shellcodes
-
 Let's kick off the blog with the foundation and starting point of all our exploits: the code we want to inject — the shellcode.
 
 For the POCs of these three techniques, we need to load the shellcode into the kernel. To do that, we're going to use a program that allows us to set a breakpoint on an Nt function, so from WinDbg we can manually move the `rip` register to execute the shellcode and also toggle SMEP and SMAP. All of this is done manually since we don’t have an exploit that allows us to build a ROP chain yet — this is mostly conceptual. In future blog posts, we’ll dive deeper into vulnerabilities, and at that point, we’ll be able to do all of this programmatically. But the goal of this post is purely conceptual and theoretical-practical, to cover the three shellcode techniques we’ll be discussing.
