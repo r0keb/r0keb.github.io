@@ -461,6 +461,7 @@ This tells us a lot: the `AceCount` in the DACL is 2 (`0x0` and `0x1`), meaning 
 There are many paths to gain access to **`winlogon.exe`**, but we chose to obtain SYSTEM rights. The idea is to **replace the SYSTEM SID with a low-privilege group**, so any member of that group gets full access to the process.
 
 To do that, we need to find the SID in memory. Going back to the DACL structure, the ACL should be at offset `0x20`, as we can see from WinDbg:
+
 ![](imgs/blog/1WindowsKernelShellcode/20250221175023.png)
 
 ![](imgs/blog/1WindowsKernelShellcode/20250221175324.png)
