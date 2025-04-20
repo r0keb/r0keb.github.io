@@ -421,7 +421,7 @@ HEVD!TypeConfusionObjectInitializer+0x37:
 fffff800`60c6754b ff5308          call    qword ptr [rbx+8]
 ```
 After we set a breakpoint there, we can follow the execution flow:
-```cpp
+```WinDbg
 0: kd> t
 nt!CcZeroData+0x5c:
 fffff803`8e132840 bc000000e8      mov     esp,0E8000000h
