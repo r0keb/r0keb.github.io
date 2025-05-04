@@ -2,7 +2,7 @@
 title: "Bypassing SMEP"
 date: 2025-04-19 11:39:03 +/-0200
 categories: [exploit, Windows]
-tags: [mitigations]     # TAG names should always be lowercase
+tags: [smep]     # TAG names should always be lowercase
 ---
 
 Good morning, in this blog post we’re going to take a deep dive into the **SMEP** mitigation or _Supervisor Mode Execution Prevention_. This is a security feature present in modern Intel processors (starting from the Ivy Bridge architecture), and its purpose is to prevent kernel-mode code (supervisor mode) from executing code located in user-space memory.
