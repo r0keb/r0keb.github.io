@@ -19,7 +19,7 @@ I’m **r0keb**, a low-level explorer focused on the raw mechanics that power mo
 
 - ⏳ Intel Architecture: From x86 to x64 and beyond — I dissect instruction sets, CPU behavior, and architectural quirks to better understand performance and potential.
 
-⟁ I share code, research notes, and low-level experiments related to the topics [above](https://r0keb.github.io/).
+⟁ I share code, research notes, and low-level experiments related to the topics [above](https://github.com/r0keb).
 
 ````
 ⠀⠀⠀⠀⠀⠐⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
