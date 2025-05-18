@@ -687,6 +687,6 @@ end
 - https://en.wikipedia.org/wiki/Speculative_execution
 
 ## Closing
-You can check the codes on my github repo [MunIntel]([https://github.com/r0keb/MunIntel)
+You can check the codes on my github repo [MunIntel](https://github.com/r0keb/MunIntel)
 
 Good morning, and in case I don’t see ya: Good afternoon, good evening, and good night!
