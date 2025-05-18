@@ -199,7 +199,7 @@ First, we'll explain the main function used in this technique (written in Assemb
 
 #### `sideChannel` function
 We start the function by setting the registers we're going to use to 0 and moving the address we want to test into `r10`. In other words, this will be an address within the range `0xfffff80000000000–0xfffff80800000000`, and we’ll measure how long it takes to access it through the caches which lets us determine whether it is already mapped or not based on the access time.
-```asm
+```nasm
 sideChannel proc
 
 	xor r8, r8
@@ -215,7 +215,7 @@ sideChannel proc
 ---
 
 **`mfence`** to ensure that all load and store instructions have been completed before continuing
-```asm
+```nasm
 	mfence
 ```
 
@@ -224,7 +224,7 @@ sideChannel proc
 Now comes the first time measurement, taken before dealing with any cache load.  
 The result is returned in the format we mentioned earlier: `rdx:rax`.  
 That’s why we use the **`shl`** instruction to combine both parts, in this case into `r9`
-```asm
+```masm
 	rdtscp
 
 	mov r8, rax
@@ -237,7 +237,7 @@ That’s why we use the **`shl`** instruction to combine both parts, in this cas
 ---
 
 **`lfence`** to ensure that all load instructions have been completed before continuing
-```asm
+```nasm
 	lfence
 ```
 
@@ -252,7 +252,7 @@ These instructions retrieve the memory line that contains the byte specified by 
 If the selected line is already present in the cache hierarchy at a level close to the processor, no data movement occurs.
 
 ***The PREFETCHh instruction is merely a hint and does not affect the program’s behavior***
-```asm
+```nasm
 	prefetchnta byte ptr [rsi]
 	prefetcht2 byte ptr [rsi]
 ```
@@ -260,14 +260,14 @@ If the selected line is already present in the cache hierarchy at a level close 
 ---
 
 **`mfence`** once again
-```asm
+```nasm
 	mfence
 ```
 
 ---
 
 Once again, we measure the time to determine whether the operations took longer or not, which helps us infer whether the address was cached. This is critically important for extracting the information we’re interested in.
-```asm
+```nasm
 	rdtscp
 
 	shl rdx, 32
@@ -277,21 +277,21 @@ Once again, we measure the time to determine whether the operations took longer 
 ---
 
 Another **`lfence`**
-```asm
+```nasm
 	lfence
 ```
 
 ---
 
 We subtract the first **`rdtscp`** result from the second to get the time difference in `rax`, which tells us how long the operation took
-```asm
+```nasm
 	sub rax, r9
 ```
 
 ---
 
 Finalization routine
-```asm
+```nasm
 	pop rsi
 
 	ret
@@ -632,7 +632,7 @@ int main() {
 }
 ```
 
-```asm
+```nasm
 code
 
 PUBLIC sideChannel
