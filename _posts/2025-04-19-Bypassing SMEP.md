@@ -1,7 +1,7 @@
 ---
 title: "Bypassing SMEP"
 date: 2025-04-19 11:39:03 +/-0200
-categories: [exploit, Windows]
+categories: [Exploit, Windows]
 tags: [smep]     # TAG names should always be lowercase
 ---
 
