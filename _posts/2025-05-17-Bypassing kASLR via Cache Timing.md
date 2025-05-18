@@ -224,7 +224,7 @@ sideChannel proc
 Now comes the first time measurement, taken before dealing with any cache load.  
 The result is returned in the format we mentioned earlier: `rdx:rax`.  
 That’s why we use the **`shl`** instruction to combine both parts, in this case into `r9`
-```masm
+```nasm
 	rdtscp
 
 	mov r8, rax
