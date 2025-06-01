@@ -17,6 +17,6 @@ My objective with this blog is to explain complex concepts from scratch, dissect
 - **Vulnerabilities**: Detailed analysis of known vulnerabilities within the Windows kernel.
 - **Intel Processor Architecture**: Understanding the evolution and features of Intel's microarchitectures.
 
-I will be publishing blogs every two weeks. If you have any questions about the content or specific topics, feel free to DM me on Twitter (X)!
+If you have any questions about the content or specific topics, feel free to DM me on Twitter (X)!
 
 I hope we can navigate these difficult topics together and learn new things with each post.
