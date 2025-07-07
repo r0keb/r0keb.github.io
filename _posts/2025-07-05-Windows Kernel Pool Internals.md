@@ -1,7 +1,7 @@
 ---
 title: "Windows Kernel Pool Internals"
 date: 2025-07-05 11:39:03 +/-0200
-categories: [research, Windows]
+categories: [Research, Windows]
 tags: [pool]     # TAG names should always be lowercase
 ---
 
