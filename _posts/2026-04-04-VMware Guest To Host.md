@@ -3,6 +3,7 @@ title: "VMware Guest To Host"
 date: 2026-04-04 11:39:03 +/-0200
 categories: [Exploit, Hypervisor]
 tags: [vmware]     # TAG names should always be lowercase
+image: imgs/blog/11VmwareGuestToHost/20260404230650.png
 ---
 
 Good morning! Today we're going to walk through the complete process of creating a Guest-to-Host exploit in VMware (version 17.0.0). My setup is my laptop with this version installed, along with Ubuntu 20.04 LTS.
